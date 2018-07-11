@@ -1,30 +1,31 @@
 const  cheerio = require('cheerio');
 const axios = require('axios');
 
-let base_url = 'http://www.bca.co.id/id/Individu/Sarana/Kurs-dan-Suku-Bunga/Kurs-dan-Kalkulator';
+const url = 'http://www.cbn.gov.ng/rates/exchratebycurrency.asp';
 
-axios.get(base_url).then( (response) => {
-    let $ = cheerio.load(response.data);
-    let kurs = [];
-    $('tr', '.text-right').each( (i, elm) => {
-        kurs.push( {
-        currency: $(elm).children().first().text(),
-        erate: {
-            sell: $(elm).children().eq(1).first().text(),
-            buy: $(elm).children().eq(2).first().text()
-        },
-        tt: {
-            sell: $(elm).children().eq(3).first().text(),
-            buy: $(elm).children().eq(4).first().text()
-        },
-        notes: {
-            sell: $(elm).children().eq(5).first().text(),
-            buy: $(elm).children().eq(6).first().text()
-        }
+axios.get(url)
+    .then((response) => {
+        if(response.status === 200) {
+        let html = response.data;
+        let $ = cheerio.load(html);
+        let currencies = [];
+        let date = "";
+
+        $('#ContentTextinner').find('table.othertables').first().find('tr').each((i, tr) => {
+            anticipatedDate = $(tr).children().first().text();
+            if (/\S/.test(anticipatedDate)) {
+            date = anticipatedDate;
+            }
+            currencies.push (
+            {
+                date: date,
+                currency: $(tr).children().eq(1).first().text(),
+                buying: $(tr).children().eq(2).first().text(),
+                central: $(tr).children().eq(3).first().text(),
+                selling: $(tr).children().eq(3).first().text()
+            }
+            );
         });
-    });
-    return(kurs);
-    })
-    .then ( (kurs) => {
-    console.log(kurs);
-});
+        console.log(currencies);
+    }
+}, (error) => console.log(err) );
