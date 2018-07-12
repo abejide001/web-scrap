@@ -14,16 +14,16 @@ const express = require('express');
     if (err) throw err;
     console.log("Connected!");
     });
-
+    //CREATE TABLE scrap (id INT AUTO_INCREMENT PRIMARY KEY, date DATETIME, currency VARCHAR(255), buying INT(50), central INT(50), selling INT(50))
 const url = 'http://www.cbn.gov.ng/rates/exchratebycurrency.asp';
 
 axios.get(url)
     .then((response) => {
         if(response.status === 200) {
-        let html = response.data;
-        let $ = cheerio.load(html);
-        let currencies = [];
-        let date = "";
+            let html = response.data;
+            let $ = cheerio.load(html);
+            let currencies = [];
+            let date = "";
 
         $('#ContentTextinner').find('table.othertables').first().find('tr').each((i, tr) => {
             anticipatedDate = $(tr).children().first().text();
@@ -32,7 +32,7 @@ axios.get(url)
             }
             currencies.push (
             {
-                date: date,
+                date: Date.parse(date),
                 currency: $(tr).children().eq(1).first().text(),
                 buying: parseFloat($(tr).children().eq(2).first().text())*10000,
                 central: parseFloat($(tr).children().eq(3).first().text())*10000,
