@@ -13,13 +13,12 @@ var con = mysql.createConnection({
 con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-    var sql = "CREATE TABLE scrap (id INT AUTO_INCREMENT PRIMARY KEY, currency_symbol VARCHAR(255), currency_value INT(30))";
+    var sql = "CREATE TABLE IF NOT EXISTS scrap (id INT AUTO_INCREMENT PRIMARY KEY, currency_symbol VARCHAR(255), currency_value INT(30))";
     con.query(sql, function (err, result) {
     if (err) throw err;
     console.log("Table created");
     });
 });
-    //CREATE TABLE scrap (id INT AUTO_INCREMENT PRIMARY KEY, currency_symbol VARCHAR(255), currency_value INT(50));
 const url = 'http://www.cbn.gov.ng/rates/exchratebycurrency.asp';
 
 axios.get(url)
@@ -28,19 +27,15 @@ if(response.status === 200) {
     let html = response.data;
     let $ = cheerio.load(html);
     let currencies = [];
-    let date = "";
 
 $('#ContentTextinner').find('table.othertables').first().find('tr').each((i, tr) => {
-    anticipatedDate = $(tr).children().first().text();
-        if (/\S/.test(anticipatedDate)) {
-        date = anticipatedDate;
-            }
     currencies.push ({
     currency_symbol: $(tr).children().eq(1).first().text(),
     currency_value: parseFloat($(tr).children().eq(3).first().text())*10000,
         }
         );
         });
+    currencies.shift();
 for (i in currencies) {
     let currency = currencies[i].currency_symbol;
     let value = currencies[i].currency_value;
