@@ -3,52 +3,50 @@ const axios = require('axios');
 const  mysql = require('mysql');
 const express = require('express');
 
-    var con = mysql.createConnection({
+var con = mysql.createConnection({
     host: "sql7.freesqldatabase.com",
     user: "sql7247101",
     password: "xWTKZU6SU8",
     database: "sql7247101"
-    });
+});
 
-    con.connect(function(err) {
+con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
+    var sql = "CREATE TABLE scrap (id INT AUTO_INCREMENT PRIMARY KEY, currency_symbol VARCHAR(255), currency_value INT(30))";
+    con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("Table created");
     });
-    //CREATE TABLE scrap (id INT AUTO_INCREMENT PRIMARY KEY, date DATETIME, currency VARCHAR(255), buying INT(50), central INT(50), selling INT(50))
+});
+    //CREATE TABLE scrap (id INT AUTO_INCREMENT PRIMARY KEY, currency_symbol VARCHAR(255), currency_value INT(50));
 const url = 'http://www.cbn.gov.ng/rates/exchratebycurrency.asp';
 
 axios.get(url)
-    .then((response) => {
-        if(response.status === 200) {
-            let html = response.data;
-            let $ = cheerio.load(html);
-            let currencies = [];
-            let date = "";
+.then((response) => {
+if(response.status === 200) {
+    let html = response.data;
+    let $ = cheerio.load(html);
+    let currencies = [];
+    let date = "";
 
-        $('#ContentTextinner').find('table.othertables').first().find('tr').each((i, tr) => {
-            anticipatedDate = $(tr).children().first().text();
-            if (/\S/.test(anticipatedDate)) {
-            date = anticipatedDate;
+$('#ContentTextinner').find('table.othertables').first().find('tr').each((i, tr) => {
+    anticipatedDate = $(tr).children().first().text();
+        if (/\S/.test(anticipatedDate)) {
+        date = anticipatedDate;
             }
-            currencies.push (
-            {
-                date: Date.parse(date),
-                currency: $(tr).children().eq(1).first().text(),
-                buying: parseFloat($(tr).children().eq(2).first().text())*10000,
-                central: parseFloat($(tr).children().eq(3).first().text())*10000,
-                selling: parseFloat($(tr).children().eq(4).first().text())*10000
-            }
-            );
+    currencies.push ({
+    currency_symbol: $(tr).children().eq(1).first().text(),
+    currency_value: parseFloat($(tr).children().eq(3).first().text())*10000,
+        }
+        );
         });
-        for (i in currencies) {
-            let date = currencies[i].date;
-            let currency = currencies[i].currency;
-            let buying = currencies[i].buying;
-            let central = currencies[i].central;
-            let selling = currencies[i].selling;
-            let sql = "INSERT INTO scrap(date, currency, buying, central, selling) VALUES ('"+date+"','"+currency+"','"+buying+"','"+central+"','"+selling+"')";
-            con.query(sql, (err, result) => {
-                if (err) throw err;
+for (i in currencies) {
+    let currency = currencies[i].currency_symbol;
+    let value = currencies[i].currency_value;
+    let sql = "INSERT INTO scrap(currency_symbol, currency_value) VALUES ('"+currency+"','"+value+"')";
+        con.query(sql, (err, result) => {
+            if (err) throw err;
                 console.log("1 record inserted");
             });
         }
