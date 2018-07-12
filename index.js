@@ -19,6 +19,7 @@ con.connect(function(err) {
     console.log("Table created");
     });
 });
+
 const url = 'http://www.cbn.gov.ng/rates/exchratebycurrency.asp';
 //get the data with axios
 axios.get(url)
@@ -32,11 +33,10 @@ $('#ContentTextinner').find('table.othertables').first().find('tr').each((i, tr)
     currencies.push ({
     currency_symbol: $(tr).children().eq(1).first().text(),
     currency_value: parseFloat($(tr).children().eq(3).first().text())*10000,
-      }
-    );
+    });
 });
 currencies.splice(0, 1);
-//loop through the currencies
+//loop through the currencies   
 for (i = 0; i < currencies.length; i++) {
     if (currencies[i].id === 1) continue;
     let currency = currencies[i].currency_symbol;
