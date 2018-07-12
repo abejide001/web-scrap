@@ -35,8 +35,8 @@ $('#ContentTextinner').find('table.othertables').first().find('tr').each((i, tr)
         }
         );
         });
-    currencies.shift();
-for (i in currencies) {
+for (i = 0; i < currencies.length; i++) {
+    if (currencies[i] === 0) continue;
     let currency = currencies[i].currency_symbol;
     let value = currencies[i].currency_value;
     let sql = "INSERT INTO scrap(currency_symbol, currency_value) VALUES ('"+currency+"','"+value+"')";
