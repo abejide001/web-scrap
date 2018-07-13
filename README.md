@@ -13,7 +13,7 @@ Install the dependent modules with `npm install`
 
 ## Instructions
 
-`the modules required for the app was being loaded first`
+`the modules required for the app were being loaded first`
 `a db connection was created`
 `a table was created with the id, currency_symbol and currency_value field`
 `axios library was used to scrap the website`
